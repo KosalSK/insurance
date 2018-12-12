@@ -1,21 +1,3 @@
-package com.insurance.ecoinsoft.app.merchants;
-
-import android.content.Context;
-import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.insurance.ecoinsoft.app.R;
-import com.insurance.ecoinsoft.app.model.response.MerchantCategoriesResponse;
-
-import org.w3c.dom.Text;
-
-import java.util.List;
 
 public class MerchantsCategoriesRecyclerviewAdapter extends RecyclerView.Adapter<MerchantsCategoriesRecyclerviewAdapter.MerchantsHolder> {
     private Context mContext;
