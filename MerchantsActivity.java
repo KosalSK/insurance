@@ -1,36 +1,3 @@
-package com.insurance.ecoinsoft.app.merchants;
-
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import com.google.gson.Gson;
-import com.insurance.ecoinsoft.app.BaseActivity;
-import com.insurance.ecoinsoft.app.R;
-import com.insurance.ecoinsoft.app.merchantpromotiondetails.MerchantspromotionDetailActivity;
-import com.insurance.ecoinsoft.app.model.response.MerchantCategoriesResponse;
-import com.insurance.ecoinsoft.app.model.response.PromotionsResponse;
-import com.insurance.ecoinsoft.app.pref.AppSharedPreferences;
-import com.insurance.ecoinsoft.app.pref.Constant;
-import com.insurance.ecoinsoft.app.util.CustomizeIntent;
-import com.insurance.ecoinsoft.app.util.CustomizeToast;
-import com.insurance.ecoinsoft.app.util.NetworkManager;
-
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MerchantsActivity extends BaseActivity implements MerchantsInterface.View, MerchantsCategoriesRecyclerviewAdapter.onItemClickListener, PromotionsRecyclerviewAdapter.onItemClickListener {
     private RecyclerView mMerchantsRecyclerView;
@@ -122,25 +89,7 @@ public class MerchantsActivity extends BaseActivity implements MerchantsInterfac
             }
         }
         return filteredModelList;
-    }
-
-
-    private void initPromotions() {
-        mProgressBar = (ProgressBar) findViewById(R.id.merchants_progressbar);
-        mMerchantsRecyclerView = (RecyclerView) findViewById(R.id.merchants_recyclerview);
-
-        mMerchantsRecyclerView.setHasFixedSize(true);
-        mMerchantsRecyclerView.setFocusable(false);
-
-        mLayoutManager = new LinearLayoutManager(this);
-        mMerchantsRecyclerView.setLayoutManager(mLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
-        mMerchantsRecyclerView.addItemDecoration(dividerItemDecoration);
-
-        mPromotionsDataModels = new ArrayList<>();
-        mAdapter = new PromotionsRecyclerviewAdapter(this, mPromotionsDataModels, this);
-        mMerchantsRecyclerView.setAdapter(mAdapter);
-    }
+    
 
     private void initCategoriesTab() {
         mAllCategoriesTextView = (TextView) findViewById(R.id.allcategories_textview);
@@ -161,16 +110,7 @@ public class MerchantsActivity extends BaseActivity implements MerchantsInterfac
 
     }
 
-    @Override
-    public void onShowProgressDialog() {
-
-    }
-
-    @Override
-    public void onHideProgressDialog() {
-
-    }
-
+   
     @Override
     public void onShowMerchantsCategoriesDataSuccess(JSONObject object) {
         if (BaseActivity.isResponseSuccess(object)) {
@@ -187,101 +127,5 @@ public class MerchantsActivity extends BaseActivity implements MerchantsInterfac
         }
 
     }
-
-    @Override
-    public void onShowMerchantsCategoriesDataError(Object object) {
-
-    }
-
-    @Override
-    public void onShowPromotionsDataSuccess(JSONObject object) {
-        if (BaseActivity.isResponseSuccess(object)) {
-            Gson mGson = new Gson();
-            PromotionsResponse promotionsResponse = mGson.fromJson(object.toString(), PromotionsResponse.class);
-            if (promotionsResponse.getData().size() == 0 || promotionsResponse.getData().isEmpty()) {
-                CustomizeToast.getInstance(this).showToast(this, "No Promotion");
-            } else {
-                mPromotionsDataModels.addAll(promotionsResponse.getData());
-                mAdapter.notifyDataSetChanged();
-            }
-            showProgressBar(false);
-        } else {
-            CustomizeToast.getInstance(this).showToast(this, "Unable to Promotion");
-        }
-    }
-
-    @Override
-    public void onShowPromotionsDataError(Object object) {
-        showProgressBar(false);
-    }
-
-    @Override
-    public void onShowPromtionFilterDataSuccess(JSONObject object) {
-        if (BaseActivity.isResponseSuccess(object)) {
-            Gson mGson = new Gson();
-            PromotionsResponse promotionsResponse = mGson.fromJson(object.toString(), PromotionsResponse.class);
-            if (promotionsResponse.getData().size() == 0 || promotionsResponse.getData().isEmpty()) {
-                CustomizeToast.getInstance(this).showToast(this, "Search Not found");
-            } else {
-                mPromotionsDataModels.addAll(promotionsResponse.getData());
-                mAdapter.notifyDataSetChanged();
-            }
-        }
-    }
-
-    @Override
-    public void onShowPromtoionFilterDataError(Object object) {
-
-    }
-
-    @Override
-    public void setPresenter(MerchantsInterface.Presenter presenter) {
-        mPresenter = presenter;
-    }
-
-    @Override
-    public void onClick(Context context, PromotionsResponse.Data promotionResponse) {
-        CustomizeIntent customizeIntent = new CustomizeIntent(this);
-        customizeIntent.startIntent(MerchantspromotionDetailActivity.class, promotionResponse);
-    }
-
-    @Override
-    public void onClick(Context context, MerchantCategoriesResponse.Data categoriesDataModel) {
-        if (NetworkManager.getInstance().isNetworkConnected(this)) {
-            categoriesID = categoriesDataModel.getId();
-            mPresenter.loadingPromotions(categoriesID);
-            mPromotionsDataModels.clear();
-            mAdapter.notifyDataSetChanged();
-
-        }
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.toolbar_profile_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.toolbar_profile_user:
-                CustomizeToast.getInstance(this).showToast(this, "Profile");
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void showProgressBar(boolean isShow) {
-        if (isShow) {
-            mProgressBar.setVisibility(View.VISIBLE);
-            mMerchantsRecyclerView.setVisibility(View.GONE);
-        } else {
-            mProgressBar.setVisibility(View.GONE);
-            mMerchantsRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
-
+        
 }
